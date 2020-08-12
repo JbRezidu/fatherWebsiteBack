@@ -1,5 +1,6 @@
 'use strict';
 
+require('module-alias/register');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -7,7 +8,7 @@ const logger = require('morgan');
 const debug = require('debug')('changethis:server');
 const http = require('http');
 const httpServer = require('./httpServer');
-
+const dbService = require('db/db.service');
 
 const app = express();
 
@@ -92,10 +93,13 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening() {
+async function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
+    
+  // init database conection
+  await dbService.initDatabaseConnection();
   console.log('Listening on ' + bind);
 }
